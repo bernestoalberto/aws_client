@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com:ACS-Lab/aws_client"
+    "url": "git@github.com:bernestoalberto/aws_client.git"
   },
   "devDependencies": {
     "aws-sdk": "^2.0.17",
