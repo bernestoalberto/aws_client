@@ -4,9 +4,9 @@ const config = require('../config/config.json');
 const logging = require('./loggin.js');
 config.database.debug = config.system.debug;
 // let pool = mysql.createPool(config.database.mysql);
-const pool = mysql.createConnection(config.database.mysql);
+const pool = mysql.createConnection(config.database.thcportal);
 console.info("Creating a new MySQL Pool");
-console.info(`Connected to ${config.database.mysql.database} db`);
+console.info(`Connected to ${config.database.thcportal.database} db`);
 let dab ={
   exec:  function(req, param, callback){
     pool.execute(req,['Rick C-137', 53],function(err, results, fields) {
