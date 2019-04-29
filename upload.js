@@ -103,7 +103,15 @@ let aws = {
   uploader(name,path,type,extension) {
 //configuring parameters
       let date =  new Date();
-      let filterName = name.replace(path+'/','');
+    let filterName = '';
+      if(env == 'local'){
+
+         filterName = name.replace(path+'/','');
+      }
+      else{
+         filterName = name.replace(path+'\\','');
+      }
+      console.log( 'Filtername' + filterName);
       path = `${type}/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}/${breadcrumb.basename(filterName)}`;
       let params = {
         Bucket: config.bucket,
@@ -147,7 +155,7 @@ let aws = {
         html: body
       };
       let user='';
-      if(env == 'GCP') {
+      if(env != 'local') {
         user = 'mlaping';
 
         mailParam.cc = [
