@@ -3,19 +3,26 @@
   "description": "Writeable stream for uploading content of unknown size to S3 via the multipart API.",
   "version": "1.0.7",
   "author": {
-    "name": "Nathan Peck",
-    "email": "nathan@storydesk.com"
+    "name": "Ernesto Bonet",
+    "email": "ebonet@acslabtest.com"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/nathanpeck/s3-upload-stream.git"
+    "url": "git://github.com:ACS-Lab/aws_client"
   },
   "devDependencies": {
-    "mocha":      "1.17.1",
-    "aws-sdk":    "2.0.17",
-    "chai":       "1.8.1"
+    "aws-sdk": "^2.0.17",
+    "chai": "1.8.1",
+    "mocha": "^6.1.4"
   },
-  "dependencies": {},
+  "dependencies": {
+    "mysql2": "^1.6.5",
+    "node-cron": "^2.0.3",
+    "node-watch": "^0.6.2",
+    "nodemailer": "^6.1.1",
+    "s3": "^4.4.0",
+    "winston": "^3.2.1"
+  },
   "peerDependencies": {
     "aws-sdk": "2.x"
   },
@@ -30,7 +37,7 @@
   "readmeFilename": "README.md",
   "main": "./lib/s3-upload-stream.js",
   "engines": {
-	  "node": ">=0.10.x"
+    "node": ">=0.10.x"
   },
   "scripts": {
     "test": "mocha -R spec -s 100 ./tests/test.js"
