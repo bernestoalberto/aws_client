@@ -1,3 +1,3 @@
 @echo off
-cmd /k node upload.js
+cmd /k node client.js
 REM PAUSE > nul

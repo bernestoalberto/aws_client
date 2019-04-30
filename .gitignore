@@ -6,3 +6,4 @@ config
 .idea/
 config/
 package-lock.json
+logs

@@ -62,8 +62,9 @@ let aws = {
       });
     });
   },
-  logDBUpload(name,path,pfolder,extension) {
-    let query = `Insert into media (resource_name, resource_path,  imagable_id, imagable_type, extension, storage_key) values ('${name}','${path}','${name}','${pfolder}','${extension}','${path}')`;
+  logDBUpload(name,path,pfolder,extension,data) {
+    let query = `Insert into media (resource_name, resource_path,  imagable_id, imagable_type, extension, storage_key,etag, object_url) 
+                 values ('${name}','${path}','${name}','${pfolder}','${extension}','${path}','${data.ETag}','https://s3.amazonaws.com/${config.bucket}/${storage_key}')`;
    mysql.exec(query,null, function (resultado){
      console.info(`File ${name} is located at ${path} on S3. DB result ${resultado}`);
 
@@ -100,6 +101,71 @@ let aws = {
         console.error(error);
       });
     },
+  getObject(id){
+    try {
+    let params = {
+      Bucket: config.bucket,
+     Key: id
+    };
+
+    s3.getObject(params, function (err, data) {
+
+      if(err)throw err;
+      let objectData = data.Body.toString('utf-8');
+      console.info(objectData);
+    });
+    } catch (e) {
+      throw new Error(`Could not retrieve file from S3: ${e.message}`);
+    }
+  },
+  listObjects(folder='reports'){
+    let prefix = (folder == 'reports')  ?`${folder}/`: '';
+    let params = {
+      Bucket: config.bucket,
+      MaxKeys: 2147483647, // Maximum allowed by S3 API,
+      Delimiter: '/ / /' ,
+      Prefix: prefix
+    };
+
+    s3.listObjects(params, function (err, data) {
+      if(err)throw err;
+       data.Contents.forEach(function (item) {
+       });
+    });
+  },
+  getdate: function () {
+    'use strict';
+    let date = new Date();
+    let d = date.getFullYear()+"-"+((date.getMonth() < 10) ? "0"+date.getMonth() : date.getMonth())+"-"+((date.getDate() < 10) ? "0"+date.getDate() : date.getDate())+" "+date.getHours()+":"+date.getMinutes()+":"+((date.getSeconds()<10) ? "0"+date.getSeconds() : date.getSeconds())+"."+date.getMilliseconds();
+    return d;
+  },
+  getObjetUrl(accession){
+    try{
+    let query = `Select * from media where resource_name like '%${accession}%'`;
+    mysql.exec(query,'',function (resultado) {
+      resultado.forEach(function (item) {
+        console.log(item.object_url);
+      });
+
+    });
+
+  } catch (e) {
+    throw new Error(`Could not retrieve file from S3: ${e.message}`);
+  }
+
+  },
+  updateFields(data){
+      let uri = `https://s3.amazonaws.com/${config.bucket}/${data.Key}`;
+      let query = `Update media set 
+                 created_at = '${aws.getdate()}',
+                 updated_at = '${aws.getdate()}',
+                 etag = '${data.ETag}',
+                 object_url = '${uri}'
+                 where storage_key =  '${data.Key}'`;
+      mysql.exec(query, '', function (result) {
+        console.log(`Resource Name updated ${data.ETag} - # Rows affected ${result.affectedRows}`);
+      });
+  },
   uploader(name,path,type,extension) {
 //configuring parameters
       let date =  new Date();
@@ -128,7 +194,7 @@ let aws = {
         if (data) {
           console.log("Uploaded in:", data.ETag);
           aws.email(filterName,`The File ${filterName} has been uploaded successfully`,`A file has been upload via AWS to S3 bucket ${config.bucket}`);
-          aws.logDBUpload(filterName, path,type,extension);
+          aws.logDBUpload(filterName, path,type,extension,data);
         }
       });
     },
@@ -175,5 +241,7 @@ aws.watchHTMLReports(pwd);
 aws.watchPDFReports(pwd);
 aws.watchImages(pwd);
 console.info(`Watching on ${pwd}`);
-
+// aws.listObjects();
+// aws.getObject('reports/2019/4/29/695288_9LB180828PH .pdf');
+// aws.getObjetUrl('699873');
 module.exports = aws;
