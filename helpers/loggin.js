@@ -1,13 +1,14 @@
 const fs = require('fs');
-const EventEmitter = require('events');
-EventEmitter.defaultMaxListeners = 1;
+// const EventEmitter = require('events');
+// EventEmitter.defaultMaxListeners = 1;
+// EventEmitter.setMaxListeners(1);
 let log = module.exports = {
   write: function (filename, data) {
     'use strict';
     let d = log.getdate();
     fs.appendFile(filename, d+"," +data+"\r\n", function (err) {
       if (err) {
-        console.err(filename);
+        console.log(filename);
         // throw err;
       }
     });
