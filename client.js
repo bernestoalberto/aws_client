@@ -220,7 +220,7 @@ let aws = {
         text: body,
         html: body
       };
-      let user='';
+/*      let user='';
       if(env != 'local') {
         user = 'mlaping';
 
@@ -228,7 +228,7 @@ let aws = {
           // (flag == 1 || subject ==1)? 'mlaping@acslabtest.com':'',
           `${user}@acslabtest.com`
         ];
-      }
+      }*/
       mailer.sendMail(mailParam, 'The Server');
     }
   };
