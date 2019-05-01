@@ -181,7 +181,7 @@ let aws = {
       path = `${type}/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}/${breadcrumb.basename(filterName)}`;
       let params = {
         Bucket: config.bucket,
-        // Acl: config.acl,
+        Acl: config.acl,
         Body: fs.createReadStream(name),
         Key: path
       };
