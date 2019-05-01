@@ -1,4 +1,6 @@
 const fs = require('fs');
+const EventEmitter = require('events');
+EventEmitter.defaultMaxListeners = 1;
 let log = module.exports = {
   write: function (filename, data) {
     'use strict';

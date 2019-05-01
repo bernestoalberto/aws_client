@@ -64,7 +64,7 @@ let aws = {
   },
   logDBUpload(name,path,pfolder,extension,data) {
     let query = `Insert into media (resource_name, resource_path,  imagable_id, imagable_type, extension, storage_key,etag, object_url) 
-                 values ('${name}','${path}','${name}','${pfolder}','${extension}','${path}','${data.ETag}','https://s3.amazonaws.com/${config.bucket}/${storage_key}')`;
+                 values ('${name}','${path}','${name}','${pfolder}','${extension}','${path}','${data.ETag}','https://s3.amazonaws.com/${config.bucket}/${path}${name}')`;
    mysql.exec(query,null, function (resultado){
      console.info(`File ${name} is located at ${path} on S3. DB result ${resultado}`);
 
@@ -181,7 +181,7 @@ let aws = {
       path = `${type}/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}/${breadcrumb.basename(filterName)}`;
       let params = {
         Bucket: config.bucket,
-        Acl: config.acl,
+        ACL: config.acl,
         Body: fs.createReadStream(name),
         Key: path
       };
