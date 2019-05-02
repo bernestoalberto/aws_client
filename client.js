@@ -379,7 +379,7 @@ aws.watchDocs(pwd);
 aws.watchHTMLReports(pwd);
 aws.watchPDFReports(pwd);
 aws.watchImages(pwd);
-aws.updateMediaDateTable();
+// aws.updateMediaDateTable();
 // aws.getOrders();
 console.info(`Watching on ${pwd}`);
 // aws.listObjects();
