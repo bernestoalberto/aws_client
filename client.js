@@ -267,6 +267,13 @@ let aws = {
       }
     });
   },
+  updateMediaDateTable(){
+    let date= aws.getdate();
+    let q = `Update media set created_at = '${date}' where  media.created_at is null `;
+    mysql.exec(q,'',function (result) {
+      console.log(result.affectedRows)
+    })
+  },
   uploaderM(name,path,type='reports',extension='.pdf') {
 //configuring parameters
 //     let filterName = '';
@@ -366,12 +373,13 @@ let aws = {
 let env = (process.env.COMPUTERNAME == 'ACS-EBONET') ? 'local' : 'WDeploy ';
 console.info(`Running on ${env} env`);
 // let pwd = (env == 'local') ? config.paths.results.source.prueba : config.paths.results.source.wdeployment;
-let pwd = (env == 'local') ? config.paths.results.source.migrate : config.paths.results.source.wdeployment;
+let pwd = (env == 'local') ? config.paths.results.source.local : config.paths.results.source.wdeployment;
 
 aws.watchDocs(pwd);
 aws.watchHTMLReports(pwd);
 aws.watchPDFReports(pwd);
 aws.watchImages(pwd);
+aws.updateMediaDateTable();
 // aws.getOrders();
 console.info(`Watching on ${pwd}`);
 // aws.listObjects();
