@@ -7,3 +7,5 @@ config
 config/
 package-lock.json
 logs
+ 6.jp
+ temp

@@ -5,11 +5,23 @@ const logging = require('./loggin.js');
 config.database.debug = config.system.debug;
 // let pool = mysql.createPool(config.database.mysql);
 const pool = mysql.createConnection(config.database.thcportal);
+const jacuzzi = mysql.createConnection(config.database.ordermanger);
 console.info("Creating a new MySQL Pool");
 console.info(`Connected to ${config.database.thcportal.database} db`);
 let dab ={
   exec:  function(req, param, callback){
     pool.execute(req,['Rick C-137', 53],function(err, results, fields) {
+      // If you execute same statement again, it will be picked form a LRU cache
+      // which will save query preparation time and give better performance
+
+      // logging.write('./postFile.txt',req);
+      // console.log(req);
+      return (results) ? callback(results, err) : dab.error(err,req);
+
+    });
+  },
+  query: function(req, param,callback){
+    jacuzzi.execute(req,['Rick C-137', 53],function(err, results, fields) {
       // If you execute same statement again, it will be picked form a LRU cache
       // which will save query preparation time and give better performance
 
