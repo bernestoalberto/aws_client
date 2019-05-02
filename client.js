@@ -59,6 +59,7 @@ let aws = {
       fs.emptyDir(path, err => {
         if (err) return console.error(err);
         console.log(`The Folder ${path}  is empty!`);
+        aws.email(path,`The Folder  is empty!`,`The Folder ${path}  is empty!`);
       });
     });
   },
