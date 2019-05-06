@@ -247,10 +247,51 @@ let aws = {
       filterName = name.replace(path+'\\','');
     }
     console.log( 'Filtername' + filterName);
-    path = (oldDate == '') ? `${type}/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}/${breadcrumb.basename(filterName)}`: `${oldPath}/${breadcrumb.basename(filterName)}`;
+    path = `${type}/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}/${breadcrumb.basename(filterName)}`;
+    let contentType ='';
+    if(extension == '.pdf' ){
+      contentType =  'application/pdf';
+    }
+    else if(extension == 'jpeg|jpg|svg|gif|png'){
+      let explodea = filterName.split('.')[1];
+      switch (explodea) {
+          case 'jpeg':
+            contentType = 'image/jpeg';
+          break;
+          case 'jpg':
+            contentType = 'image/jpg';
+          break;
+          case 'svg':
+            contentType = 'image/svg+xml';
+          break;
+          case 'gif':
+            contentType = 'image/gif';
+          break;
+          case 'png':
+            contentType = 'image/png';
+          break;
+      }
+
+
+    }
+    else if(extension =='.csv|txt'){
+      let explodea = filterName.split('.')[1];
+      switch (explodea) {
+        case 'csv':
+          contentType = 'text/plain';
+          break;
+        case 'txt':
+          contentType = 'text/csv';
+          break;
+      }
+    }
+
     let params = {
       Bucket: config.bucket,
       ACL: config.acl,
+      Metadata: {
+        'x-amz-meta-Content-Type': contentType,
+      },
       Body: fs.createReadStream(name),
       Key: path
     };
@@ -267,23 +308,32 @@ let aws = {
       }
     });
   },
-  updateMediaDateTable(){
-    let date= aws.getdate();
-    let q = `Update media set created_at = '${date}' where  media.created_at is null `;
+  geMediaDateTable(){
+    // let date= aws.getdate();
+    let q = `Select object_url,resource_name from media `;
     mysql.exec(q,'',function (result) {
-      console.log(result.affectedRows)
+      aws.updateMediaDateTable(result);
     })
   },
-  uploaderM(name,path,type='reports',extension='.pdf') {
-//configuring parameters
-//     let filterName = '';
- /*   if(env == 'local'){
+  updateMediaDateTable(list){
+  // updateMediaDateTable(){
+    list.forEach(function (item) {
+      let hits = item.object_url.split('.pdf');
+      if (hits[1] != ""){
+        let rename = hits[0]+'.pdf';
+        let query = `Update media set object_url='${rename}' where resource_name = '${item.resource_name}'`;
+        mysql.exec(query,'',function (result) {
+          console.log(item.resource_name + '#:'+ result.affectedRows);
+        });
 
-      filterName = name.replace(path+'/','');
+      }
+    });
+  },
+  uploaderM(name,path,type='reports',extension='.pdf') {
+    let contentType ='';
+    if(extension == '.pdf' ){
+      contentType =  'application/pdf';
     }
-    else{
-      filterName = name.replace(path+'\\','');
-    }*/
     let accession = name.replace(config.paths.results.source.migrate+'\\','');
     aws.getFileDate(accession).then((date)=> {
       date.forEach(function (item) {
@@ -293,6 +343,9 @@ let aws = {
       let params = {
         Bucket: config.bucket,
         ACL: config.acl,
+        Metadata: {
+          'x-amz-meta-Content-Type': contentType,
+        },
         Body: fs.createReadStream(name),
         Key: path
       };
@@ -374,7 +427,6 @@ let env = (process.env.COMPUTERNAME == 'ACS-EBONET') ? 'local' : 'WDeploy ';
 console.info(`Running on ${env} env`);
 // let pwd = (env == 'local') ? config.paths.results.source.prueba : config.paths.results.source.wdeployment;
 let pwd = (env == 'local') ? config.paths.results.source.local : config.paths.results.source.wdeployment;
-
 aws.watchDocs(pwd);
 aws.watchHTMLReports(pwd);
 aws.watchPDFReports(pwd);
@@ -382,6 +434,7 @@ aws.watchImages(pwd);
 // aws.updateMediaDateTable();
 // aws.getOrders();
 console.info(`Watching on ${pwd}`);
+aws.geMediaDateTable() ;
 // aws.listObjects();
 // aws.getObject('reports/2019/4/29/695288_9LB180828PH .pdf');
 // aws.getObjetUrl('699873');
