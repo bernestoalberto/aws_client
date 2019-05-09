@@ -303,7 +303,7 @@ let aws = {
       //success
       if (data) {
         console.log("Uploaded in:", data.ETag);
-        aws.email(filterName,`The File ${filterName} has been uploaded successfully`,`A file has been upload via AWS to S3 bucket ${config.bucket} on path 'https://s3.amazonaws.com/${config.bucket}/${path}${filterName}'`);
+        aws.email(filterName,`The File ${filterName} has been uploaded successfully  on path 'https://s3.amazonaws.com/${config.bucket}/${path}${filterName}'`,`A file has been upload via AWS to S3 bucket ${config.bucket}`);
         aws.logDBUpload(filterName, path,type,extension,data);
       }
     });
